@@ -8,6 +8,20 @@
   var ICON_ZOOM = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2M11 8v6M8 11h6"/></svg>';
   var ICON_FULL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
 
+  /* ---------- slide scale: --u = 1% of the slide's width, in px ----------
+     Measured here instead of using container units, which some Safari versions
+     size wrongly when the page is zoomed (text then overlaps the slide art). */
+  function sizeSlide(el, w) {
+    w = w || el.offsetWidth;
+    if (w) el.style.setProperty("--u", (w / 100) + "px");
+  }
+  var slideRO = "ResizeObserver" in window ? new ResizeObserver(function (es) {
+    es.forEach(function (e) { sizeSlide(e.target, e.contentRect.width); });
+  }) : null;
+  function watchSlide(el) { sizeSlide(el); if (slideRO) slideRO.observe(el); }
+  $$(".slide").forEach(watchSlide);
+  if (!slideRO) window.addEventListener("resize", function () { $$(".slide").forEach(function (el) { sizeSlide(el); }); });
+
   var wraps = $$("main .slide-wrap");
 
   /* ---------- header + progress + dock ---------- */
@@ -118,7 +132,7 @@
       n.className = "note";
       n.innerHTML = (noteCount++ % 3 === 2) ? NOTE2 : NOTE1;
       var dir = Math.random() < 0.5 ? -1 : 1;
-      n.style.setProperty("--dx", (dir * (2 + Math.random() * 4)).toFixed(2) + "cqw");
+      n.style.setProperty("--dx", "calc(var(--u) * " + (dir * (2 + Math.random() * 4)).toFixed(2) + ")");
       n.style.setProperty("--r", (dir * (8 + Math.random() * 14)).toFixed(1) + "deg");
       notesBox.appendChild(n);
       setTimeout(function () { n.parentNode && n.parentNode.removeChild(n); }, 3000);
@@ -234,6 +248,8 @@
     clone.setAttribute("aria-hidden", "true");
     lens.appendChild(clone);
     w.appendChild(lens);
+    clone.style.width = slide.offsetWidth + "px";
+    watchSlide(clone);
     w.classList.add("zooming");
     btn.setAttribute("aria-pressed", "true");
     function move(e) {
@@ -270,6 +286,7 @@
     $$(".el, .tx", clone).forEach(function (n) { n.style.transitionDelay = "0s"; });
     $$("a.jump", clone).forEach(function (a) { a.addEventListener("click", function () { dlg.close(); }); });
     stage.replaceChildren(clone);
+    watchSlide(clone);
     $$(".vid", clone).forEach(function (b) {
       wireVideo(b);
       var v = $("video", b); v.preload = "auto";

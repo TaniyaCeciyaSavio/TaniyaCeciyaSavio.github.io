@@ -1,6 +1,19 @@
 (function () {
   "use strict";
 
+  // Slide scale: --u = 1% of each slide's width in px (zoom-proof, unlike container units in some Safari versions)
+  function sizeSlide(el, w) {
+    w = w || el.offsetWidth;
+    if (w) el.style.setProperty("--u", (w / 100) + "px");
+  }
+  var slideRO = "ResizeObserver" in window ? new ResizeObserver(function (es) {
+    es.forEach(function (e) { sizeSlide(e.target, e.contentRect.width); });
+  }) : null;
+  function watchSlide(el) { sizeSlide(el); if (slideRO) slideRO.observe(el); }
+  document.querySelectorAll(".slide").forEach(watchSlide);
+  if (!slideRO) window.addEventListener("resize", function () { document.querySelectorAll(".slide").forEach(function (el) { sizeSlide(el); }); });
+  window.__watchSlide = watchSlide;
+
   // Mobile menu
   var btn = document.querySelector(".menu-btn");
   var nav = document.getElementById("nav");
@@ -59,6 +72,7 @@
       a.addEventListener("click", function () { dlg.close(); });
     });
     stage.replaceChildren(clone);
+    watchSlide(clone);
     clone.querySelectorAll(".vid").forEach(function (b) {
       wireVideo(b);
       var v = b.querySelector("video");
