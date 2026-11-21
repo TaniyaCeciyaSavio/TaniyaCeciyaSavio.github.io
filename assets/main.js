@@ -116,6 +116,17 @@
   }
   var vids = $$("main .vid");
   vids.forEach(wireVideo);
+  $$(".vfs").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var v = $("video", b.parentNode);
+      v.muted = false;
+      var s = $(".snd", b.parentNode);
+      if (s) { s.setAttribute("aria-pressed", "true"); s.setAttribute("aria-label", "Turn sound off"); s.firstElementChild.innerHTML = "&#128266;"; }
+      v.play().catch(function () {});
+      if (v.requestFullscreen) v.requestFullscreen().catch(function () {});
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    });
+  });
   if ("IntersectionObserver" in window) {
     var vo = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
