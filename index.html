@@ -165,6 +165,19 @@ button { font: inherit; }
 .js .in .bar i { transform: scaleX(1); }
 @media (max-width: 960px) { .glance { grid-template-columns: 1fr 1fr; } .glance .card:last-child { grid-column: 1 / -1; } }
 @media (max-width: 620px) { .glance { grid-template-columns: 1fr; } }
+/* phones: the slide's top half is shown as larger stacked pieces (portrait, then title + bio,
+   then the torn edge) so it isn't dwarfed by the info panel below */
+.about-mobile { display: none; }
+@media (max-width: 640px) {
+  .about-crop { display: none; }
+  .about-mobile { display: block; background: #ececec; }
+  .about-mobile .am { position: relative; overflow: hidden; }
+  .about-mobile .am img { position: absolute; max-width: none; height: auto; display: block; }
+  .glance { gap: 22px; padding: 22px 20px 28px; }
+  .card h3 { font-size: 13px; margin-bottom: 10px; }
+  .card p, .card li { font-size: 14.5px; line-height: 1.55; }
+  .bars li { padding: 5px 0; }
+}
 .viewer .stage.crop-about { aspect-ratio: 38100000 / 17430750; overflow: hidden; width: min(100vw, calc(100vh * 38100000 / 17430750)); }
 
 /* horizontal character showcase */
@@ -299,6 +312,11 @@ html .slide-wrap.zooming .slide, html .slide-wrap.zooming .slide * { cursor: zoo
     </div>
     <div class="about-card">
     <div class="about-crop"><div class="slide-wrap" id="s2" role="group" aria-label="About me — experience, education and tools"><div class="slide" data-index="2" style="background:#ffffff"><div class="el bg" style="--i:0;left:0.0%;top:0.0%;width:100.0%;height:100.0%"><img src="assets/img/image2.webp" alt="" width="2800" height="1960" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div><div class="el" style="--i:1;left:82.3984%;top:13.2328%;width:4.7109%;height:10.8546%;transform:rotate(-18.746deg)"><img src="assets/img/image4.svg" alt="" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div></div><button class="expand" type="button" aria-label="View About me — experience, education and tools full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div></div>
+    <div class="about-mobile" role="img" aria-label="About me slide: Hey It's Taniyaaa!! — portrait and introduction">
+      <div class="am" style="aspect-ratio:1250/1340"><img src="assets/img/image2.webp" alt="" loading="lazy" decoding="async" style="width:320%;left:-12%;top:-4.4776%"></div>
+      <div class="am" style="aspect-ratio:2150/1000"><img src="assets/img/image2.webp" alt="" loading="lazy" decoding="async" style="width:186.0465%;left:-69.7674%;top:-32%"><img src="assets/img/image4.svg" alt="" loading="lazy" decoding="async" style="position:absolute;left:83.532%;top:5.052%;width:8.764%;height:30.393%"></div>
+      <div class="am" style="aspect-ratio:4000/330"><img src="assets/img/image2.webp" alt="" loading="lazy" decoding="async" style="width:100%;left:0;top:-454.545%"></div>
+    </div>
     <div class="glance rvh">
       <div class="card">
         <h3>EXPERIENCE</h3>
