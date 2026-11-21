@@ -28,21 +28,21 @@
   var top = $(".top"), bar = $(".progress"), dock = $(".dock");
   var hero = $(".hero"), finale = $(".finale");
   var ticking = false;
+  function update() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.transform = "scaleX(" + (max > 0 ? h.scrollTop / max : 0) + ")";
+    var heroBottom = hero.getBoundingClientRect().bottom;
+    top.classList.toggle("over-hero", heroBottom >= 70);
+    var finTop = finale.getBoundingClientRect().top;
+    dock.classList.toggle("show", heroBottom < 0 && finTop > window.innerHeight * 0.6);
+    hsUpdate();
+    if (typeof checkReveal === "function") checkReveal();
+  }
   function onScroll() {
     if (ticking) return;
     ticking = true;
-    requestAnimationFrame(function () {
-      ticking = false;
-      var h = document.documentElement;
-      var max = h.scrollHeight - h.clientHeight;
-      bar.style.transform = "scaleX(" + (max > 0 ? h.scrollTop / max : 0) + ")";
-      var heroBottom = hero.getBoundingClientRect().bottom;
-      top.classList.toggle("over-hero", heroBottom >= 70);
-      var finTop = finale.getBoundingClientRect().top;
-      dock.classList.toggle("show", heroBottom < 0 && finTop > window.innerHeight * 0.6);
-      hsUpdate();
-      if (typeof checkReveal === "function") checkReveal();
-    });
+    requestAnimationFrame(function () { ticking = false; update(); });
   }
   window.addEventListener("scroll", onScroll, { passive: true });
   window.addEventListener("resize", function () { hsLayout(); onScroll(); });
@@ -106,7 +106,7 @@
     });
   }
   var sweeps = 0, sweepT = setInterval(function () {
-    checkReveal();
+    update();
     if (++sweeps > 12) clearInterval(sweepT);
   }, 250);
 
@@ -255,7 +255,9 @@
     function move(e) {
       var r = slide.getBoundingClientRect();
       var x = e.clientX - r.left, y = e.clientY - r.top;
-      if (x < 0 || y < 0 || x > r.width || y > r.height) { lens.style.opacity = "0"; return; }
+      var crop = w.closest(".about-crop");
+      var maxY = crop ? Math.min(r.height, crop.getBoundingClientRect().bottom - r.top) : r.height;
+      if (x < 0 || y < 0 || x > r.width || y > maxY) { lens.style.opacity = "0"; return; }
       lens.style.opacity = "1";
       clone.style.width = r.width + "px";
       var L = lens.offsetWidth / 2;
@@ -286,6 +288,7 @@
     $$(".el, .tx", clone).forEach(function (n) { n.style.transitionDelay = "0s"; });
     $$("a.jump", clone).forEach(function (a) { a.addEventListener("click", function () { dlg.close(); }); });
     stage.replaceChildren(clone);
+    stage.classList.toggle("crop-about", !!slides[cur].closest(".about-crop"));
     watchSlide(clone);
     $$(".vid", clone).forEach(function (b) {
       wireVideo(b);
@@ -342,6 +345,6 @@
     });
   });
 
-  onScroll();
-  window.addEventListener("load", function () { hsLayout(); onScroll(); });
+  update();
+  window.addEventListener("load", function () { hsLayout(); update(); });
 })();
