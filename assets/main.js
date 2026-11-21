@@ -37,8 +37,44 @@
   wraps.forEach(function (w) { if (!w.closest(".hero-art")) w.classList.add("rv"); });
   var heroWrap = $(".hero-art .slide-wrap");
   var revealables = $$(".slide-wrap.rv, .rvh");
+  /* ---------- headings typed in real time ---------- */
+  var tws = $$(".tw");
+  tws.forEach(function (tw) {
+    var text = tw.textContent;
+    var h = tw.closest("h2");
+    if (h) h.setAttribute("aria-label", text);
+    tw.setAttribute("aria-hidden", "true");
+    tw.textContent = "";
+    text.split("").forEach(function (c) {
+      var sp = document.createElement("span");
+      sp.className = "ch" + (reduce ? "" : " off");
+      sp.textContent = c;
+      tw.appendChild(sp);
+    });
+    var caret = document.createElement("span");
+    caret.className = "caret";
+    tw._caret = caret;
+    if (reduce) tw.appendChild(caret); else tw.insertBefore(caret, tw.firstChild);
+  });
+  function typeOut(tw) {
+    if (reduce || tw._typed) return;
+    tw._typed = true;
+    var chars = $$(".ch", tw), i = 0, caret = tw._caret;
+    caret.classList.add("typing");
+    (function next() {
+      if (i >= chars.length) { caret.classList.remove("typing"); return; }
+      var c = chars[i++];
+      c.classList.remove("off");
+      c.parentNode.insertBefore(caret, c.nextSibling);
+      // human-ish rhythm: quicker inside words, small pause after spaces
+      var d = c.textContent === " " ? 150 + Math.random() * 90 : 55 + Math.random() * 75;
+      setTimeout(next, d);
+    })();
+  }
+
   function reveal(el) {
     el.classList.add("in");
+    $$(".tw", el).forEach(function (tw) { setTimeout(function () { typeOut(tw); }, 250); });
     if (el.classList.contains("slide-wrap")) setTimeout(function () { el.classList.add("done"); }, 2200);
   }
   // Position check (not IntersectionObserver) so content always appears,
@@ -68,6 +104,30 @@
       heroWrap.style.transform = "rotateY(" + (x * 7).toFixed(2) + "deg) rotateX(" + (-y * 6).toFixed(2) + "deg)";
     });
     hero.addEventListener("mouseleave", function () { heroWrap.style.transform = ""; });
+  }
+
+  /* ---------- cover girl: pixel music notes from her headphones ---------- */
+  var NOTE1 = '<svg viewBox="0 0 8 10" aria-hidden="true"><path fill="#E80000" d="M3 0h4v2H5v6H4v1H3v1H1V9H0V7h1V6h3V0z"/></svg>';
+  var NOTE2 = NOTE1.replace("#E80000", "#FFCB05");
+  var notesBox = $(".hero-art .notes");
+  if (notesBox && !reduce) {
+    var noteCount = 0;
+    var spawn = function () {
+      if (document.hidden || hero.getBoundingClientRect().bottom < 0) return;
+      var n = document.createElement("span");
+      n.className = "note";
+      n.innerHTML = (noteCount++ % 3 === 2) ? NOTE2 : NOTE1;
+      var dir = Math.random() < 0.5 ? -1 : 1;
+      n.style.setProperty("--dx", (dir * (2 + Math.random() * 4)).toFixed(2) + "cqw");
+      n.style.setProperty("--r", (dir * (8 + Math.random() * 14)).toFixed(1) + "deg");
+      notesBox.appendChild(n);
+      setTimeout(function () { n.parentNode && n.parentNode.removeChild(n); }, 3000);
+    };
+    var noteTimer = setInterval(spawn, 1300);
+    var heroArtEl = $(".hero-art");
+    heroArtEl.addEventListener("mouseenter", function () { clearInterval(noteTimer); noteTimer = setInterval(spawn, 650); spawn(); });
+    heroArtEl.addEventListener("mouseleave", function () { clearInterval(noteTimer); noteTimer = setInterval(spawn, 1300); });
+    setTimeout(spawn, 600);
   }
 
   /* ---------- contents strips: lift the strip under its link ---------- */

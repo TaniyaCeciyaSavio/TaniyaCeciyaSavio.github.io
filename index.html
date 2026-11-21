@@ -60,9 +60,8 @@ button { font: inherit; }
 .hero h1 span { display: block; }
 .hero .role { margin: 22px 0 0; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.5; color: var(--night-muted); max-width: 34ch; }
 .hero .role strong { color: var(--night-text); font-weight: 600; }
-.status { display: inline-flex; align-items: center; gap: 10px; margin-top: 26px; font-size: 14px; color: var(--night-text); padding: 8px 14px; border: 1px solid #2c2c2c; border-radius: 999px; }
-.status i { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,.6); animation: ping 2s infinite; }
-@keyframes ping { 70% { box-shadow: 0 0 0 8px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
+.status { display: inline-flex; align-items: center; gap: 10px; margin-top: 28px; font-family: var(--font-pixel); font-size: 10px; line-height: 1.5; text-transform: uppercase; color: #111; background: var(--yellow); padding: 10px 14px 9px; box-shadow: 4px 4px 0 var(--red); }
+.status i { width: 8px; height: 8px; background: var(--red); flex: none; animation: blink 1s steps(1) infinite; }
 .hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
 .hero .btn.ghost { color: var(--night-text); }
 .hero .btn.ghost:hover { color: var(--yellow); }
@@ -79,13 +78,12 @@ button { font: inherit; }
 .sec-num { font-family: var(--font-pixel); font-size: 12px; color: var(--red); margin: 0 0 14px; }
 .sec h2 { margin: 0; font-family: var(--font-pixel); font-weight: 400; font-size: clamp(18px, 2.6vw, 34px); line-height: 1.4; color: var(--ink); }
 .sec .cap { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.55; max-width: 52ch; }
-.tw { display: inline-block; white-space: nowrap; }
-.js .tw { clip-path: inset(0 100% 0 0); }
-.js .in .tw { animation: type calc(var(--n) * 45ms) steps(var(--n), end) forwards; }
-.tw::after { content: ""; display: inline-block; width: .55em; height: 1em; margin-left: .25em; vertical-align: -.1em; background: var(--red); animation: blink 1s steps(1) infinite; }
-@keyframes type { to { clip-path: inset(0 -1em 0 0); } }
+.tw .ch.off { visibility: hidden; }
+.caret { display: inline-block; position: relative; width: 0; height: 1em; vertical-align: -.12em; }
+.caret::after { content: ""; position: absolute; left: .12em; top: 0; width: .55em; height: 1em; background: var(--red); }
+.caret.typing::after { animation: none; }
+.caret:not(.typing)::after { animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-@media (max-width: 600px) { .tw { white-space: normal; } .js .tw { clip-path: none; } .js .in .tw { animation: none; } }
 
 /* ---------- slides (exact deck reproduction) ---------- */
 .slide-wrap { position: relative; }
@@ -114,6 +112,26 @@ button { font: inherit; }
 /* hover lift for cards, paintings and contents strips */
 .slide .el.lift { transition: translate .35s var(--ease), filter .35s var(--ease), opacity .7s; }
 .slide .el.lift:hover, .slide .el.lift.hot { translate: 0 -1.4cqw !important; filter: drop-shadow(0 1.4cqw 1.2cqw rgba(0,0,0,.4)); z-index: 5; }
+
+/* animated cover girl: lifted onto her own layer, grooving to her headphones */
+.slide .girl { position: absolute; z-index: 2; transform-origin: 51% 94%; }
+.slide .girl img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
+.js .slide .girl { animation: groove 2.6s ease-in-out infinite; }
+.hero-art:hover .girl { animation-duration: 1.3s; }
+@keyframes groove {
+  0%, 100% { transform: rotate(0deg) scaleY(1); }
+  25% { transform: rotate(-0.9deg) scaleY(1.01); }
+  50% { transform: rotate(0deg) scaleY(1.016); }
+  75% { transform: rotate(0.75deg) scaleY(1.008); }
+}
+.slide .notes { position: absolute; left: 30%; top: 9%; width: 0; height: 0; }
+.slide .note { position: absolute; left: 0; top: 0; width: 2.4cqw; height: 3cqw; opacity: 0; filter: drop-shadow(.18cqw .18cqw 0 #000); animation: floatNote 2.8s ease-out forwards; image-rendering: pixelated; }
+.slide .note svg { width: 100%; height: 100%; display: block; shape-rendering: crispEdges; }
+@keyframes floatNote {
+  0% { opacity: 0; transform: translate(0, 0) scale(.6) rotate(0deg); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), -9cqw) scale(1) rotate(var(--r)); }
+}
 
 /* slide toolbar */
 .tools { position: absolute; top: 12px; right: 12px; z-index: 8; display: flex; gap: 6px; opacity: 0; transition: opacity .2s; }
@@ -205,8 +223,8 @@ footer a { color: #cfcfcf; }
 /* floating hire bar */
 .dock { position: fixed; left: 50%; bottom: 18px; z-index: 40; display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 18px; background: rgba(14,14,14,.92); backdrop-filter: blur(10px); color: #fff; border-radius: 999px; box-shadow: 0 12px 34px rgba(0,0,0,.3); transform: translate(-50%, 140%); transition: transform .45s var(--ease); max-width: calc(100vw - 24px); }
 .dock.show { transform: translate(-50%, 0); }
-.dock .who { font-size: 14px; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
-.dock .who i { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
+.dock .who { font-family: var(--font-pixel); font-size: 9px; line-height: 1.5; text-transform: uppercase; color: var(--yellow); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+.dock .who i { width: 7px; height: 7px; background: var(--red); animation: blink 1s steps(1) infinite; }
 .dock .btn { padding: 9px 16px; font-size: 14px; }
 .dock .btn.ghost { color: #fff; }
 @media (max-width: 560px) { .dock .who { display: none; } .dock { padding: 8px; } }
@@ -232,7 +250,9 @@ footer a { color: #cfcfcf; }
   .js .tw { clip-path: none; } .js .in .tw { animation: none; }
   .js .bar i { transform: none; }
   .js .vcard.rvh { opacity: 1 !important; translate: none !important; transition: none !important; }
-  .status i, .scroll-hint, .start span, .tw::after { animation: none; }
+  .status i, .scroll-hint, .start span, .caret::after, .dock .who i { animation: none !important; }
+  .js .slide .girl { animation: none; }
+  .slide .notes { display: none; }
 }
 </style>
 </head>
@@ -263,7 +283,7 @@ footer a { color: #cfcfcf; }
         <a class="btn ghost" href="#contents">See the work</a>
       </div>
     </div>
-    <div class="hero-art"><div class="slide-wrap flat" id="s1" role="group" aria-label="Portfolio cover"><div class="slide" data-index="1" style="background:#ffffff"><div class="el bg" style="--i:0;left:0.0%;top:0.0%;width:100.0%;height:100.0%"><img src="assets/img/image1.webp" alt="" width="2800" height="1960" fetchpriority="high" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div></div><button class="expand" type="button" aria-label="View Portfolio cover full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div></div>
+    <div class="hero-art"><div class="slide-wrap flat" id="s1" role="group" aria-label="Portfolio cover"><div class="slide" data-index="1" style="background:#ffffff"><div class="el bg" style="--i:0;left:0.0%;top:0.0%;width:100.0%;height:100.0%"><img src="assets/img/cover_bg.webp" alt="" width="2800" height="1960" fetchpriority="high" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div><div class="girl" aria-hidden="true" style="left:73.7500%;top:11.7857%;width:22.5000%;height:64.2857%"><img src="assets/img/cover_girl.webp" alt="" fetchpriority="high" decoding="async"><span class="notes"></span></div></div><button class="expand" type="button" aria-label="View Portfolio cover full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div></div>
   </div>
   <a class="scroll-hint" href="#about" aria-label="Scroll to about">▼ SCROLL</a>
 </section>
@@ -271,7 +291,7 @@ footer a { color: #cfcfcf; }
 <section class="sec" id="about" aria-labelledby="about-h">
   <div class="wrap">
     <div class="sec-head rvh">
-      <div><p class="sec-num">00 · PLAYER ONE</p><h2 id="about-h"><span class="tw" style="--n:8">About me</span></h2></div>
+      <div><p class="sec-num">00</p><h2 id="about-h"><span class="tw" style="--n:8">About me</span></h2></div>
       <p class="cap">Powered by coffee, curiosity, and an unhealthy number of "What if...?" questions.</p>
     </div>
     <div class="slide-wrap" id="s2" role="group" aria-label="About me — experience, education and tools"><div class="slide" data-index="2" style="background:#ffffff"><div class="el bg" style="--i:0;left:0.0%;top:0.0%;width:100.0%;height:100.0%"><img src="assets/img/image2.webp" alt="" width="2800" height="1960" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div><div class="el" style="--i:1;left:82.3984%;top:13.2328%;width:4.7109%;height:10.8546%;transform:rotate(-18.746deg)"><img src="assets/img/image4.svg" alt="" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div></div><button class="expand" type="button" aria-label="View About me — experience, education and tools full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
@@ -414,7 +434,7 @@ footer a { color: #cfcfcf; }
 
 <section class="finale" id="contact" aria-labelledby="ct-h">
   <div class="wrap finale-grid">
-    <div class="finale-art"><div class="slide-wrap" id="s21" role="group" aria-label="Thank you — contact"><div class="slide" data-index="21" style="background:#ffffff"><div class="el" style="--i:0;left:10.244%;top:-40.851%;width:71.8003%;height:182.35%;transform:rotate(-90.0deg)"><img src="assets/img/image63.webp" alt="" width="675" height="1200" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div><div class="el" style="--i:1;left:15.0327%;top:69.5234%;width:3.5758%;height:5.1082%"><a class="fill" href="https://www.behance.net/taniyaceciya" target="_blank" rel="noopener" aria-label="Behance"><img src="assets/img/image64.webp" alt="" width="100" height="100" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></a></div><div class="el" style="--i:2;left:15.0327%;top:77.3192%;width:2.6675%;height:3.8107%"><a class="fill" href="https://www.linkedin.com/in/taniya-ceciya-savio-913298375" target="_blank" rel="noopener" aria-label="LinkedIn"><img src="assets/img/image65.webp" alt="" width="75" height="75" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></a></div><div class="el" style="--i:3;left:14.8171%;top:84.672%;width:3.0986%;height:3.1429%"><a class="fill" href="mailto:taniyaceciyasavio@gmail.com" aria-label="Email"><img src="assets/img/image66.webp" alt="" width="87" height="62" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></a></div><div class="el" style="--i:4;left:2.5119%;top:27.2065%;width:10.778%;height:15.9557%;transform:scale(-1,1)"><img src="assets/img/image68.svg" alt="" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div><div class="tx" style="--i:5;left:10.349%;top:21.6826%;width:56.8456%;height:37.8051%"><p style="text-align:center;line-height:15.9167cqw;font-size:11.369cqw"><span style="font-family:var(--font-pixel);font-size:11.369cqw;color:#E80000">THANK</span></p><p style="text-align:left;line-height:6.3667cqw;font-size:11.369cqw"><span style="font-family:var(--font-pixel);font-size:11.369cqw;color:#E80000">YOU.</span></p></div><div class="tx" style="--i:6;left:13.7082%;top:70.7211%;width:26.7199%;height:2.427%"><p style="text-align:center;line-height:1.7573cqw;font-size:1.2553cqw"><a href="https://www.behance.net/taniyaceciya" target="_blank" rel="noopener"><span style="font-family:var(--font-glacial);font-size:1.2553cqw;color:#E80000;font-weight:700;text-decoration:underline">TANIYA CECIYA SAVIO</span></a></p></div><div class="tx" style="--i:7;left:-3.3221%;top:77.8836%;width:60.7805%;height:2.3961%"><p style="text-align:center;line-height:1.734cqw;font-size:1.2387cqw"><a href="https://www.linkedin.com/in/taniya-ceciya-savio-913298375" target="_blank" rel="noopener"><span style="font-family:var(--font-glacial);font-size:1.2387cqw;color:#E80000;font-weight:700;text-decoration:underline">TANIYA CECIYA SAVIO</span></a></p></div><div class="tx" style="--i:8;left:6.0723%;top:84.987%;width:48.9724%;height:2.8279%"><p style="text-align:center;line-height:2.068cqw;font-size:1.477cqw"><a href="mailto:taniyaceciyasavio@gmail.com"><span style="font-family:var(--font-glacial);font-size:1.477cqw;color:#E80000;font-weight:700">taniyaceciyasavio@gmail.com</span></a></p></div></div><button class="expand" type="button" aria-label="View Thank you — contact full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div></div>
+    <div class="finale-art"><div class="slide-wrap" id="s21" role="group" aria-label="Thank you — contact"><div class="slide" data-index="21" style="background:#ffffff"><div class="el" style="--i:0;left:10.244%;top:-40.851%;width:71.8003%;height:182.35%;transform:rotate(-90.0deg)"><img src="assets/img/image63.webp" alt="" width="675" height="1200" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div><div class="el" style="--i:1;left:15.0327%;top:69.5234%;width:3.5758%;height:5.1082%"><a class="fill" href="https://www.behance.net/taniyaceciya" target="_blank" rel="noopener" aria-label="Behance"><img src="assets/img/image64.webp" alt="" width="100" height="100" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></a></div><div class="el" style="--i:2;left:15.0327%;top:77.3192%;width:2.6675%;height:3.8107%"><a class="fill" href="https://www.linkedin.com/in/taniya-ceciya-savio-913298375" target="_blank" rel="noopener" aria-label="LinkedIn"><img src="assets/img/image65.webp" alt="" width="75" height="75" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></a></div><div class="el" style="--i:3;left:14.8171%;top:84.672%;width:3.0986%;height:3.1429%"><a class="fill" href="mailto:taniyaceciyasavio@gmail.com" aria-label="Email"><img src="assets/img/image66.webp" alt="" width="87" height="62" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></a></div><div class="el" style="--i:4;left:2.5119%;top:27.2065%;width:10.778%;height:15.9557%;transform:scale(-1,1)"><img src="assets/img/image68.svg" alt="" loading="lazy" decoding="async" style="left:0.0%;top:0.0%;width:100.0%;height:100.0%"></div><div class="tx" style="--i:5;left:10.349%;top:21.6826%;width:56.8456%;height:37.8051%"><p style="text-align:center;line-height:15.9167cqw;font-size:11.369cqw"><span style="font-family:var(--font-pixel);font-size:11.369cqw;color:#E80000">THANK</span></p><p style="text-align:left;line-height:6.3667cqw;font-size:11.369cqw"><span style="font-family:var(--font-pixel);font-size:11.369cqw;color:#E80000">YOU.</span></p></div><div class="tx" style="--i:6;left:13.7082%;top:70.7211%;width:26.7199%;height:2.427%"><p style="text-align:center;line-height:1.7573cqw;font-size:1.2553cqw"><a href="https://www.behance.net/taniyaceciya" target="_blank" rel="noopener"><span style="font-family:var(--font-glacial);font-size:1.2553cqw;color:#E80000;font-weight:700;text-decoration:underline">TANIYA CECIYA SAVIO</span></a></p></div><div class="tx" style="--i:7;left:-3.3221%;top:77.8836%;width:60.7805%;height:2.3961%"><p style="text-align:center;line-height:1.734cqw;font-size:1.2387cqw"><a href="https://www.linkedin.com/in/taniya-ceciya-savio-913298375" target="_blank" rel="noopener"><span style="font-family:var(--font-glacial);font-size:1.2387cqw;color:#E80000;font-weight:700;text-decoration:underline">TANIYA CECIYA SAVIO</span></a></p></div><div class="tx" style="--i:8;left:6.0723%;top:84.987%;width:48.9724%;height:2.8279%"><p style="text-align:center;line-height:2.068cqw;font-size:1.477cqw"><a href="mailto:taniyaceciyasavio@gmail.com"><span style="font-family:var(--font-glacial);font-size:1.477cqw;color:#E80000;font-weight:700">taniyaceciyasavio@gmail.com</span></a></p></div><div class="el" style="--i:9;left:15.12%;top:91.6%;width:2.4%;height:3.43%"><a class="fill" href="https://www.instagram.com/the.arteriole/" target="_blank" rel="noopener" aria-label="Instagram — the.arteriole"><img src="assets/img/instagram.svg" alt="" loading="lazy" decoding="async" style="left:0%;top:0%;width:100%;height:100%"></a></div><div class="tx" style="--i:10;left:20.352%;top:92.09%;width:48.0%;height:2.5%"><p style="text-align:left;line-height:1.7573cqw;font-size:1.2553cqw"><a href="https://www.instagram.com/the.arteriole/" target="_blank" rel="noopener"><span style="font-family:var(--font-glacial);font-size:1.2553cqw;color:#E80000;font-weight:700;text-decoration:underline">TANIYA CECIYA SAVIO</span></a><a href="https://www.instagram.com/the.arteriole/" target="_blank" rel="noopener"><span style="font-family:var(--font-glacial);font-size:1.2553cqw;color:#E80000;font-weight:700">  ·  the.arteriole</span></a></p></div></div><button class="expand" type="button" aria-label="View Thank you — contact full screen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div></div>
     <div>
       <p class="eyebrow">PLAYER 2, READY?</p>
       <h2 id="ct-h">Let&#x27;s work together</h2>
@@ -424,6 +444,7 @@ footer a { color: #cfcfcf; }
         <li><button type="button" class="copy" data-email="taniyaceciyasavio@gmail.com">Copy email <span>taniyaceciyasavio@gmail.com</span></button></li>
         <li><a href="https://www.behance.net/taniyaceciya" target="_blank" rel="noopener">Behance <span>behance.net/taniyaceciya</span></a></li>
         <li><a href="https://www.linkedin.com/in/taniya-ceciya-savio-913298375" target="_blank" rel="noopener">LinkedIn <span>Taniya Ceciya Savio</span></a></li>
+        <li><a href="https://www.instagram.com/the.arteriole/" target="_blank" rel="noopener">Instagram <span>Taniya Ceciya Savio · the.arteriole</span></a></li>
       </ul>
     </div>
   </div>
@@ -437,7 +458,7 @@ footer a { color: #cfcfcf; }
 </footer>
 
 <div class="dock" aria-label="Contact Taniya">
-  <span class="who"><i></i>Taniya · open to illustrator roles</span>
+  <span class="who"><i></i>Open to illustrator roles</span>
   <button type="button" class="btn ghost copy" data-email="taniyaceciyasavio@gmail.com">Copy email</button>
   <a class="btn red" href="mailto:taniyaceciyasavio@gmail.com?subject=Illustrator%20role%20%E2%80%94%20interview">Hire me</a>
 </div>
